@@ -38,6 +38,8 @@ class ChildViewController: UIViewController {
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.sizeToFit()
         searchController.searchBar.placeholder = "搜索"
+        searchController.searchBar.keyboardType = .numberPad
+
         //        searchController.searchBar.scopeBarBackgroundImage
 //        searchController.searchBar.showsScopeBar = true
         searchController.hidesNavigationBarDuringPresentation = false
@@ -47,11 +49,20 @@ class ChildViewController: UIViewController {
 //        searchController.searchBar.scopeButtonTitles = ["美团", "百度"]
 //        searchController.searchBar.becomeFirstResponder()
 //        definesPresentationContext = true
-        searchController.searchBar.barStyle = .blackTranslucent
         if #available(iOS 9.0, *) {
             UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = "取消"
         }
     }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+//        searchController.isActive = true
+//        searchController.searchBar.becomeFirstResponder()
+        delay(0.1) { self.searchController.searchBar.becomeFirstResponder() }
+
+    }
+
+
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.dismiss(animated: true, completion: nil)
@@ -83,25 +94,14 @@ extension ChildViewController: UISearchBarDelegate {
     }
 
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        func delay(interval: TimeInterval, execute: @escaping () -> Void)  {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + interval, execute: execute)
-        }
         if #available(iOS 9.0, *) {} else {
-            delay(interval: 0.1, execute: { [weak self] in
+            delay(0.1, execute: { [weak self] in
                 if let cancelButton = self?.searchController.searchBar.subviews.last?.subviews.filter({$0.description.contains("UINavigationButton")}).last as? UIButton {
                     cancelButton.setTitle("取消", for: .normal)
                 }
             })
         }
         return true
-    }
-
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.showsScopeBar = true
-    }
-
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        searchBar.showsScopeBar = false
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -123,6 +123,10 @@ extension ChildViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     }
+}
+
+func delay(_ interval: TimeInterval, execute: @escaping () -> Void)  {
+    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + interval, execute: execute)
 }
 
 
